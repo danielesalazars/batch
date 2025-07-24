@@ -1,0 +1,51 @@
+services:
+  # Motor de Base de Datos
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    restart: always
+    environment:
+      SA_PASSWORD: 'YourStrong!Passw0rd'
+      ACCEPT_EULA: 'Y'
+    ports:
+      - '1433:1433'
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  # Administrador de Base de Datos
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    depends_on:
+      - sqlserver
+    ports:
+      - '8080:8080'
+    environment:
+      ADMINER_DEFAULT_SERVER: sqlserver
+
+  # App Microservice en Container
+  # app:
+  #   build:
+  #     context: ./
+  #     dockerfile: Dockerfile
+  #   container_name: microservice
+  #   restart: always
+  #   depends_on:
+  #     - sqlserver
+  #     - adminer
+  #   environment:
+  #     DB_HOST: 'sqlserver'
+  #     DB_USER: 'sa'
+  #     DB_PASSWORD: 'YourStrong!Passw0rd'
+  #     DB_NAME: 'applicationDB'
+  #     DB_PORT: '1433'
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - ./.env:/usr/src/app/.env
+
+# Volúmenes previamente definidos
+volumes:
+  sql_data:
+    external: true
